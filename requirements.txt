@@ -1,0 +1,7 @@
+streamlit
+pandas
+pytesseract
+Pillow
+fuzzywuzzy
+pdf2image
+fpdf
