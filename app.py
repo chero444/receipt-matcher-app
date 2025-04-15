@@ -4,7 +4,7 @@ import pytesseract
 from PIL import Image
 import io, zipfile
 from fuzzywuzzy import fuzz
-from pdf2image import convert_from_bytes
+import fitz  # PyMuPDF
 from fpdf import FPDF
 
 st.title("Receipt Matcher")
@@ -39,9 +39,12 @@ if statement_file and receipt_files:
 
             for receipt in receipt_files:
                 content = receipt.read()
+
+                # Convert PDF or open image
                 if receipt.name.endswith('.pdf'):
-                    pages = convert_from_bytes(content)
-                    image = pages[0]
+                    doc = fitz.open(stream=content, filetype="pdf")
+                    pix = doc[0].get_pixmap()
+                    image = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
                 else:
                     image = Image.open(io.BytesIO(content))
 
