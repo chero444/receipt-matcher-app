@@ -3,5 +3,6 @@ pandas
 pytesseract
 Pillow
 fuzzywuzzy
-pdf2image
+python-Levenshtein
+pymupdf
 fpdf
