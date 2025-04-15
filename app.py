@@ -4,7 +4,7 @@ import pytesseract
 from PIL import Image
 import io, zipfile
 from fuzzywuzzy import fuzz
-import fitz  # PyMuPDF
+import fitz  # PyMuPDF is actually imported as 'fitz' from 'pymupdf'
 from fpdf import FPDF
 
 st.title("Receipt Matcher")
@@ -42,9 +42,15 @@ if statement_file and receipt_files:
 
                 # Convert PDF or open image
                 if receipt.name.endswith('.pdf'):
-                    doc = fitz.open(stream=content, filetype="pdf")
-                    pix = doc[0].get_pixmap()
-                    image = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                    try:
+                        import fitz  # Ensure import here in case of Streamlit Cloud module issues
+                        doc = fitz.open(stream=content, filetype="pdf")
+                        page = doc.load_page(0)
+                        pix = page.get_pixmap()
+                        image = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                    except Exception as e:
+                        st.warning(f"Failed to process PDF '{receipt.name}': {e}")
+                        continue
                 else:
                     image = Image.open(io.BytesIO(content))
 
