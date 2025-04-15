@@ -56,7 +56,8 @@ if statement_file and receipt_files:
 
                 # Try to detect vendor and amount
                 is_home_depot = 'home depot' in text
-                amount_match = re.search(r'cad\$?\s?(\d+\.\d{2})', text)
+                # Improve amount detection to be more flexible
+                amount_match = re.search(r'(?:cad\$?|total\s*\$?)\s*(\d+\.\d{2})', text)
                 amount = float(amount_match.group(1)) if amount_match else None
 
                 st.write(f"Vendor Detected: {'Home Depot' if is_home_depot else 'Unknown'}")
