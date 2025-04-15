@@ -7,6 +7,7 @@ from fuzzywuzzy import fuzz
 import fitz  # PyMuPDF is actually imported as 'fitz' from 'pymupdf'
 from fpdf import FPDF
 import tempfile
+import re
 
 st.title("Receipt Matcher")
 
@@ -49,8 +50,17 @@ if statement_file and receipt_files:
                 else:
                     image = Image.open(io.BytesIO(content))
 
-                text = pytesseract.image_to_string(image).lower()
+                custom_config = r'--oem 3 --psm 6'
+                text = pytesseract.image_to_string(image, config=custom_config).lower()
                 st.write(f"**{receipt.name}** text preview:", text[:500])
+
+                # Try to detect vendor and amount
+                is_home_depot = 'home depot' in text
+                amount_match = re.search(r'cad\$?\s?(\d+\.\d{2})', text)
+                amount = float(amount_match.group(1)) if amount_match else None
+
+                st.write(f"Vendor Detected: {'Home Depot' if is_home_depot else 'Unknown'}")
+                st.write(f"Amount Detected: {amount if amount else 'Not found'}")
 
                 # Match by vendor text only for now
                 best_match = None
