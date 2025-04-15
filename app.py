@@ -50,6 +50,7 @@ if statement_file and receipt_files:
                     image = Image.open(io.BytesIO(content))
 
                 text = pytesseract.image_to_string(image).lower()
+                st.write(f"**{receipt.name}** text preview:", text[:500])
 
                 # Match by vendor text only for now
                 best_match = None
@@ -63,6 +64,8 @@ if statement_file and receipt_files:
                 if best_match is not None:
                     tx_num = str(best_match[tx_col]).zfill(2)
                     vendor = best_match[vendor_col].title()
+                    st.success(f"Matched '{receipt.name}' to transaction #{tx_num} - {vendor}")
+
                     filename = f"{tx_num} - {vendor}.pdf"
 
                     pdf = FPDF()
