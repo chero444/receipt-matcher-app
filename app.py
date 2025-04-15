@@ -18,9 +18,9 @@ if statement_file and receipt_files:
     with st.spinner("Processing..."):
         df = pd.read_csv(statement_file)
 
-        # Rename 'ITEM' to 'Vendor' for internal consistency
-        df.rename(columns={"ITEM": "Vendor"}, inplace=True)
-        df['Vendor'] = df['Vendor'].astype(str).str.lower().str.strip()
+        # Clean column headers and vendor field
+        df.columns = df.columns.str.strip()
+        df['ITEM'] = df['ITEM'].astype(str).str.lower().str.strip()
 
         output_pdfs = []
 
@@ -38,14 +38,14 @@ if statement_file and receipt_files:
             best_match = None
             best_score = 0
             for _, row in df.iterrows():
-                score = fuzz.partial_ratio(row['Vendor'], text)
+                score = fuzz.partial_ratio(row['ITEM'], text)
                 if score > best_score:
                     best_match = row
                     best_score = score
 
             if best_match is not None:
                 tx_num = str(best_match['#']).zfill(2)  # Assuming '#' is transaction number column
-                vendor = best_match['Vendor'].title()
+                vendor = best_match['ITEM'].title()
                 filename = f"{tx_num} - {vendor}.pdf"
 
                 pdf = FPDF()
