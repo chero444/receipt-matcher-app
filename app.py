@@ -16,7 +16,8 @@ receipt_files = st.file_uploader("Upload Receipt Files", type=["jpg", "jpeg", "p
 
 if statement_file and receipt_files:
     with st.spinner("Processing..."):
-        df = pd.read_csv(statement_file)
+        # Skip to row 43 where headers start
+        df = pd.read_csv(statement_file, skiprows=42)
 
         # Clean column headers and display them to help debug
         df.columns = df.columns.str.strip()
